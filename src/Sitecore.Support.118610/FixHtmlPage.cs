@@ -97,6 +97,7 @@ namespace Sitecore.Support.Shell.Applications.ContentEditor.Dialogs.FixHtml
             this.OriginalHtml = @string;
             this.Original.InnerHtml = @string;
             this.OriginalMemo.Value = @string;
+            @string = @string.Replace("&", "&amp;");
             FixXHtmlArgs fixXHtmlArgs = new FixXHtmlArgs(@string);
             using (new LongRunningOperationWatcher(Settings.Profiling.RenderFieldThreshold, "fixXHtml", new string[0]))
             {
@@ -159,5 +160,6 @@ namespace Sitecore.Support.Shell.Applications.ContentEditor.Dialogs.FixHtml
             expr_1B.Add(urlString);
             SheerResponse.ShowModalDialog(urlString.ToString());
         }
+
     }
 }
