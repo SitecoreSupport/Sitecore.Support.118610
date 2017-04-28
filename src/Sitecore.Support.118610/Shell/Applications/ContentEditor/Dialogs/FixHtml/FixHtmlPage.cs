@@ -15,6 +15,7 @@
     using Sitecore.Web.UI.XamlSharp.Xaml;
     using System;
     using System.Collections.ObjectModel;
+
     public class FixHtmlPage : XamlMainControl
     {
         protected Scrollbox Fixed;
