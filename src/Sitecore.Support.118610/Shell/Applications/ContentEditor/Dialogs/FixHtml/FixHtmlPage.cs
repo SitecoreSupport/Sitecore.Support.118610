@@ -15,6 +15,11 @@
     using Sitecore.Web.UI.XamlSharp.Xaml;
     using System;
     using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Web;
+    using System.Xml;
 
     public class FixHtmlPage : XamlMainControl
     {
@@ -90,33 +95,54 @@
                 return;
             }
             UrlHandle urlHandle = UrlHandle.Get();
-            string @string = StringUtil.GetString(new string[]
+            string text = StringUtil.GetString(new string[]
             {
                 urlHandle["html"]
             });
-            this.OriginalHtml = @string;
-            this.Original.InnerHtml = @string;
-            this.OriginalMemo.Value = @string;
-            UrlHandle handle = UrlHandle.Get();
-            string body = this.SanitizeHtml(StringUtil.GetString(new string[] { handle["html"] }));
-            FixXHtmlArgs fixXHtmlArgs = new FixXHtmlArgs(body);
+
+            this.OriginalHtml = text;
+
+            this.OriginalMemo.Value = text;
+
+            try
+            {
+                this.Original.InnerHtml = RuntimeHtml.Convert(text, Settings.HtmlEditor.SupportWebControls);
+            }
+            catch
+            {
+            }
+
+            FixXHtmlArgs fixXHtmlArgs = new FixXHtmlArgs(this.SanitizeHtml(text));
             using (new LongRunningOperationWatcher(Settings.Profiling.RenderFieldThreshold, "fixXHtml", new string[0]))
             {
                 CorePipeline.Run("fixXHtml", fixXHtmlArgs);
             }
-            string string2 = ConvertToXHtmlFromFixXhtml(fixXHtmlArgs);
-            this.FixedHtml = string2;
-            this.Fixed.InnerHtml = string2;
-            this.FixedMemo.Value = string2;
-            FixHtmlPage.CountErrors(@string, this.OriginalErrorCount);
-            FixHtmlPage.CountErrors(string2, this.FixedErrorCount);
+            string @string = StringUtil.GetString(new string[]
+            {
+                fixXHtmlArgs.Html
+            });
+            this.FixedHtml = @string;
+            this.Fixed.InnerHtml = @string;
+            this.FixedMemo.Value = @string;
+            FixHtmlPage.CountErrors(text, this.OriginalErrorCount);
+            FixHtmlPage.CountErrors(@string, this.FixedErrorCount);
             this.OriginalErrorCount2.Text = this.OriginalErrorCount.Text;
             this.FixedErrorCount2.Text = this.FixedErrorCount.Text;
         }
 
-        private string ConvertToXHtmlFromFixXhtml(FixXHtmlArgs fixXHtmlArgs)
+        private string ConvertAmpersands(string input)
         {
-            return fixXHtmlArgs.Html.Replace("&lt;", "<").Replace("&gt;", ">").Replace("&quot;", "\"");
+            string output = Regex.Replace(input, @"&(?! \w+; | \#[0-9]+; | \#x[0-9A-F]+;)", "&amp;", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
+
+            foreach (Match m in Regex.Matches(output, @"&(\w+; | \#[0-9]+; | \#x[0-9A-F]+;)"))
+            {
+                if (HttpUtility.HtmlDecode(m.Value) == m.Value)
+                {
+                    output = output.Replace(m.Value, "&amp;" + m.Value.Substring(1));
+                }
+            }
+
+            return output;
         }
 
         protected void ClickTab(string id)
@@ -171,7 +197,8 @@
             {
                 preparedHtml = this.RemoveAllScripts(originalHtml);
             }
-            return this.EncodeHtml(preparedHtml);
+            return this.ConvertAmpersands(preparedHtml);
+            //return this.EncodeHtml(preparedHtml);
         }
 
         protected internal virtual bool ShouldRemoveScripts

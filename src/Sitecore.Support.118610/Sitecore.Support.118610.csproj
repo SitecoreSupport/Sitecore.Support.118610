@@ -55,7 +55,6 @@
     <Compile Include="Shell\Applications\ContentEditor\Dialogs\FixHtml\FixHtmlPage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Config\Include\zzz\Sitecore.Support.118610.config" />
     <Content Include="sitecore\shell\Applications\Content Manager\Dialogs\FixHtml\FixHtml.xaml.xml" />
   </ItemGroup>
   <ItemGroup>
