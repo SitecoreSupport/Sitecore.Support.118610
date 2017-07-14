@@ -108,8 +108,9 @@
             {
                 this.Original.InnerHtml = RuntimeHtml.Convert(text, Settings.HtmlEditor.SupportWebControls);
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Warn(ex.Message, ex, this);
             }
 
             FixXHtmlArgs fixXHtmlArgs = new FixXHtmlArgs(this.SanitizeHtml(text));
