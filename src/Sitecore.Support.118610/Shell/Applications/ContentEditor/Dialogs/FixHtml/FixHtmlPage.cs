@@ -1,22 +1,22 @@
 ﻿namespace Sitecore.Support.Shell.Applications.ContentEditor.Dialogs.FixHtml
 {
-    using Sitecore.Configuration;
-    using Sitecore.Data.Items;
-    using Sitecore.Diagnostics;
-    using Sitecore.Globalization;
-    using Sitecore.Layouts;
-    using Sitecore.Pipelines;
-    using Sitecore.Pipelines.FixXHtml;
-    using Sitecore.Text;
-    using Sitecore.Web;
-    using Sitecore.Web.UI.HtmlControls;
-    using Sitecore.Web.UI.Sheer;
-    using Sitecore.Web.UI.WebControls;
-    using Sitecore.Web.UI.XamlSharp.Xaml;
-    using System;
-    using System.Collections.ObjectModel;
+  using Sitecore.Configuration;
+  using Sitecore.Data.Items;
+  using Sitecore.Diagnostics;
+  using Sitecore.Globalization;
+  using Sitecore.Layouts;
+  using Sitecore.Pipelines;
+  using Sitecore.Pipelines.FixXHtml;
+  using Sitecore.Text;
+  using Sitecore.Web;
+  using Sitecore.Web.UI.HtmlControls;
+  using Sitecore.Web.UI.Sheer;
+  using Sitecore.Web.UI.WebControls;
+  using Sitecore.Web.UI.XamlSharp.Xaml;
+  using System;
+  using System.Collections.ObjectModel;
 
-    public class FixHtmlPage : XamlMainControl
+  public class FixHtmlPage : XamlMainControl
     {
         protected Scrollbox Fixed;
 
@@ -116,7 +116,7 @@
 
         private string ConvertToXHtmlFromFixXhtml(FixXHtmlArgs fixXHtmlArgs)
         {
-            return fixXHtmlArgs.Html.Replace("&lt;", "<").Replace("&gt;", ">").Replace("&quot;", "\"");
+            return fixXHtmlArgs.Html.Replace("&lt;", "<").Replace("&gt;", ">").Replace("&quot;", "\"").Replace("&amp;", "&");
         }
 
         protected void ClickTab(string id)
@@ -171,7 +171,7 @@
             {
                 preparedHtml = this.RemoveAllScripts(originalHtml);
             }
-            return this.EncodeHtml(preparedHtml);
+            return EncodeHtml(preparedHtml);
         }
 
         protected internal virtual bool ShouldRemoveScripts
